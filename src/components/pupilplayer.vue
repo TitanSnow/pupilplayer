@@ -13,15 +13,15 @@
       </div>
     </div>
     <div class="flex-layout vcenter" :style="full_width">
-      <button @click="toggle_play" class="material-icons">{{ paused ? 'play_arrow' : 'pause' }}</button>
+      <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
       <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
-      <i class="material-icons" @click="toggle_mute" style="cursor: pointer">{{ volume == 0 ? 'volume_off' : 'volume_up' }}</i>
+      <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
       <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
     </div>
     <div class="flex-layout vcenter" :style="full_width">
       <input type="text" style="flex-grow: 1" placeholder="Add danmaku" v-model="danmaku_input" @keyup.enter="add_danmaku">
       <color-picker v-model="danmaku_color"/>
-      <button class="material-icons" @click="add_danmaku">send</button>
+      <button @click="add_danmaku"><icon name="rocket"/></button>
     </div>
   </div>
 </template>
@@ -30,6 +30,12 @@
 import sortedLastIndex from 'lodash.sortedlastindex'
 import sortedIndex from 'lodash.sortedindex'
 import {Compact} from 'vue-color'
+import 'vue-awesome/icons/play'
+import 'vue-awesome/icons/pause'
+import 'vue-awesome/icons/volume-off'
+import 'vue-awesome/icons/volume-up'
+import 'vue-awesome/icons/rocket'
+import Icon from 'vue-awesome/components/Icon'
 export default {
   name: 'pupilplayer',
   props: ['src', 'danmakus'],
@@ -196,14 +202,13 @@ export default {
     }
   },
   components: {
-    'color-picker': Compact
+    'color-picker': Compact,
+    'icon': Icon
   }
 }
 </script>
 
 <style scoped>
-@import "https://fonts.googleapis.com/icon?family=Material+Icons";
-
 .flex-layout {
   display: flex;
 }

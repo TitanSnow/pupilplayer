@@ -12,6 +12,7 @@
     "lodash.sortedindex": "^4.1.0",
     "lodash.sortedlastindex": "^4.1.0",
     "vue": "^2.5.11",
+    "vue-awesome": "^2.3.7",
     "vue-color": "^2.4.6"
   },
   "browserslist": [
