@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>pupilplayer</title>
+  </head>
+  <body>
+    <form id="form" style="display: block">
+      <input type="file" name="file" required>
+      <button>Open</button>
+    </form>
+    <div id="app"></div>
+    <script src="/dist/build.js"></script>
+    <script>
+      var player = new pupilplayer('#app')
+      document.getElementById('form').onsubmit = function(e){
+        e.preventDefault()
+        player.src = URL.createObjectURL(this.elements['file'].files[0])
+      }
+    </script>
+  </body>
+</html>
