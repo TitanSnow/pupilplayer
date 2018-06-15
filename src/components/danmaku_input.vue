@@ -4,8 +4,8 @@
     <v-popover>
       <button type="button"><icon name="cog"/></button>
       <template slot="popover">
-        <color-picker v-model="color"/>
         <button v-close-popover><icon name="times"></icon></button>
+        <color-picker v-model="color"/>
       </template>
     </v-popover>
     <button type="submit"><icon name="rocket"/></button>
