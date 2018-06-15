@@ -68,11 +68,11 @@ export default {
     this.element.addEventListener('play', () => this.paused = false)
     this.element.addEventListener('pause', () => this.paused = true)
     this.element.addEventListener('durationchange', () => this.duration = this.element.duration)
+    this.element.addEventListener('volumechange', () => this.element_volume = this.element.volume)
     var frame_callback = () => {
       if(!this.paused)
         this.draw_canvas()
       this.element_current_time = this.element.currentTime
-      this.element_volume = this.element.volume
       requestAnimationFrame(frame_callback)
     }
     requestAnimationFrame(frame_callback)
