@@ -1,27 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>pupilplayer</title>
-  </head>
-  <body>
-    <form id="form" style="display: block">
-      <input type="file" name="file" required>
-      <button>Open</button>
-    </form>
-    <div id="app"></div>
-    <script src="/dist/build.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
-    <script>
-      var player = new pupilplayer('#app')
-      document.getElementById('form').onsubmit = function(e){
-        e.preventDefault()
-        player.src = URL.createObjectURL(this.elements['file'].files[0])
+<meta charset="utf-8">
+<title>pupilplayer demo</title>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.10/lodash.min.js"></script>
+<script src="/dist/build.js"></script>
+
+<div id="app">
+  <form @submit.prevent="open_file">
+    <input type="file" ref="file" required accept="video/*">
+    <button type="submit">Open</button>
+  </form>
+  <pupilplayer :src="src" :danmakus="danmakus" @add-danmaku="add_danmaku"/>
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      src: '',
+      danmakus: []
+    },
+    methods: {
+      open_file(){
+        this.src = URL.createObjectURL(this.$refs.file.files[0])
+      },
+      add_danmaku(dmk){
+        this.danmakus.splice(_.sortedLastIndex(this.danmakus, dmk.time), 0, dmk)
       }
-      player.$on('add-danmaku', function(dmk){
-        var pos = _.sortedLastIndex(this.danmakus, dmk.current_time)
-        this.danmakus.splice(pos, 0, dmk)
-      })
-    </script>
-  </body>
-</html>
+    }
+  })
+</script>
