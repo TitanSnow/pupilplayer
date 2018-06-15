@@ -4,7 +4,6 @@
     <v-popover>
       <button type="button"><icon name="cog"/></button>
       <template slot="popover">
-        <button v-close-popover><icon name="times"></icon></button>
         <color-picker v-model="color"/>
       </template>
     </v-popover>
@@ -17,7 +16,7 @@ import 'vue-awesome/icons/cog'
 import 'vue-awesome/icons/rocket'
 import 'vue-awesome/icons/times'
 import Icon from 'vue-awesome/components/Icon'
-import {VPopover, VClosePopover} from 'v-tooltip'
+import {VPopover} from 'v-tooltip'
 import {Compact} from 'vue-color'
 export default {
   props: ['width'],
@@ -32,9 +31,6 @@ export default {
     'v-popover': VPopover,
     'color-picker': Compact
   },
-  directives: {
-    'close-popover': VClosePopover
-  },
   methods: {
     submit(){
       this.$emit('add-danmaku', {text: this.text, color: this.color.hex})
@@ -48,6 +44,7 @@ export default {
 <style scoped>
 form {
   display: flex;
+  align-items: center;
 }
 form > input {
   flex-grow: 1;
