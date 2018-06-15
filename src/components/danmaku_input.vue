@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="submit" :style="{width: width + 'px'}">
-    <input type="text" placeholder="Add danmaku" v-model="text" @keyup.enter="submit">
+    <input type="text" placeholder="Add danmaku" v-model="text">
     <v-popover>
       <button type="button"><icon name="cog"/></button>
       <template slot="popover">

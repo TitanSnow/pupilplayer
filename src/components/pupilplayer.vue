@@ -1,18 +1,20 @@
 <template>
   <div>
-    <canvas ref="canvas" :width="width" :height="height" @click="toggle_play" style="display: block"></canvas>
+    <canvas ref="canvas" :width="width" :height="height" @click="toggle_play"></canvas>
     <div :style="overlay_style">
-      <div v-for="row in Math.floor(height / danmaku_line_height)"
-        :key="'danmaku_row' + row" :ref="'danmaku_row' + row"
-        :style="{
-          lineHeight: danmaku_line_height + 'px',
-          fontSize: danmaku_line_height + 'px',
-          height: danmaku_line_height + 'px'
-        }" class="danmaku_row"
-      >
+      <div ref="danmaku_roll">
+        <div v-for="row in Math.floor(height / danmaku_line_height)"
+          :key="'danmaku_row' + row" :ref="'danmaku_row' + row"
+          :style="{
+            lineHeight: danmaku_line_height + 'px',
+            fontSize: danmaku_line_height + 'px',
+            height: danmaku_line_height + 'px'
+          }" class="danmaku_row"
+        >
+        </div>
       </div>
     </div>
-    <div class="flex-layout vcenter" :style="full_width">
+    <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
       <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
@@ -30,6 +32,11 @@ import 'vue-awesome/icons/pause'
 import 'vue-awesome/icons/volume-off'
 import 'vue-awesome/icons/volume-up'
 import Icon from 'vue-awesome/components/Icon'
+
+function offset_parent(e){
+  return [e.getBoundingClientRect().x - e.parentNode.getBoundingClientRect().x, e.getBoundingClientRect().y - e.parentNode.getBoundingClientRect().y]
+}
+
 export default {
   name: 'pupilplayer',
   props: ['src', 'danmakus'],
@@ -66,6 +73,16 @@ export default {
       requestAnimationFrame(frame_callback)
     }
     requestAnimationFrame(frame_callback)
+  },
+  mounted(){
+    var roll_next = 0
+    var roll_callback = () => {
+      this.$refs.danmaku_roll.animate({
+        transform: [`translateX(${roll_next}px)`, `translateX(${roll_next - 10000}px`]
+      }, {duration: 10000 * 10}).onfinish = roll_callback
+      roll_next -= 10000
+    }
+    roll_callback()
   },
   watch: {
     src: function(){
@@ -143,8 +160,7 @@ export default {
     },
     add_danmaku: function(dmk){
       dmk.time = this.current_time
-      this.insert_danmaku(dmk)
-      this.$emit('add-danmaku', dmk)
+      this.$emit('add-danmaku', dmk, this.insert_danmaku(dmk))
     },
     insert_danmaku: function(danmaku){
       for(var row = 1; this.$refs['danmaku_row' + row]; ++row){
@@ -153,7 +169,7 @@ export default {
         if(typeof last_span === 'undefined')
           break
         else{
-          var rt = parseInt(getComputedStyle(last_span).left)
+          var rt = offset_parent(last_span)[0] + last_span.getBoundingClientRect().width + offset_parent(this.$refs.danmaku_roll)[0]
           if(rt < this.width)
             break
         }
@@ -166,12 +182,11 @@ export default {
         element.style.color = danmaku.color
         row_element.appendChild(element)
         var element_width = parseInt(element.getBoundingClientRect().width)
-        element.style.marginLeft = -element_width + 'px'
         element.style.position = 'absolute';
         element.style.top = 0;
-        element.animate({
-          left: [this.width + element_width + 'px', '0']
-        }, {duration: this.width * 10}).onfinish = () => element.remove()
+        element.style.left = -offset_parent(this.$refs.danmaku_roll)[0] + this.width + 'px'
+        setTimeout(() => element.remove(), (this.width + element_width) * 10)
+        return element
       }
     },
     update_danmakus: function(){
@@ -188,10 +203,12 @@ export default {
 </script>
 
 <style scoped>
-.flex-layout {
-  display: flex;
+canvas {
+  display: block;
 }
-.flex-layout.vcenter {
+
+.controller {
+  display: flex;
   align-items: center;
 }
 
