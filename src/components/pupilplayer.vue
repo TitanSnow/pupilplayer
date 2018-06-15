@@ -28,7 +28,6 @@
 
 <script>
 import sortedLastIndex from 'lodash.sortedlastindex'
-import sortedIndex from 'lodash.sortedindex'
 import {Compact} from 'vue-color'
 import 'vue-awesome/icons/play'
 import 'vue-awesome/icons/pause'
@@ -51,10 +50,8 @@ export default {
       volume_ratio: 16,
       volume_before_mute: 0,
       danmaku_timelist: [],
-      danmaku_list: [],
       danmaku_input: '',
       danmaku_line_height: 24,
-      danmaku_next_enter: 0,
       danmaku_color: {hex: '#FFFFFF'}
     }
   },
@@ -82,12 +79,10 @@ export default {
       this.update_src()
     },
     current_time: function(val, old_val){
-      if(val < old_val)
-        this.danmaku_next_enter = sortedIndex(this.danmaku_timelist, val)
-      var pos = sortedLastIndex(this.danmaku_timelist, val)
-      for(var i = this.danmaku_next_enter; i < pos; ++i)
-        this.insert_danmaku(this.danmaku_list[i])
-      this.danmaku_next_enter = pos
+      var l = sortedLastIndex(this.danmaku_timelist, old_val)
+      var r = sortedLastIndex(this.danmaku_timelist, val)
+      for(var i = l; i < r; ++i)
+        this.insert_danmaku(this.danmakus[i])
     },
     danmakus: function(){
       this.update_danmakus()
@@ -154,12 +149,7 @@ export default {
       }
     },
     add_danmaku: function(){
-      var pos = sortedLastIndex(this.danmaku_timelist, this.current_time)
-      var danmaku_obj = {text: this.danmaku_input, color: this.danmaku_color.hex}
-      this.danmaku_timelist.splice(pos, 0, this.current_time)
-      this.danmaku_list.splice(pos, 0, danmaku_obj)
-      this.danmaku_input = ''
-      this.$emit('add-danmaku', {...danmaku_obj, time: this.current_time})
+      this.$emit('add-danmaku', {text: this.danmaku_input, color: this.danmaku_color.hex, time: this.current_time})
     },
     insert_danmaku: function(danmaku){
       for(var row = 1; this.$refs['danmaku_row' + row]; ++row){
@@ -191,14 +181,8 @@ export default {
     },
     update_danmakus: function(){
       this.danmaku_timelist.splice(0)
-      this.danmaku_list.splice(0)
-      for(var danmaku of this.danmakus){
+      for(var danmaku of this.danmakus)
         this.danmaku_timelist.push(danmaku.time)
-        var temp = Object.assign({}, danmaku)
-        delete temp.time
-        this.danmaku_list.push(temp)
-      }
-      this.danmaku_next_enter = sortedIndex(this.danmaku_timelist, this.current_time)
     }
   },
   components: {
