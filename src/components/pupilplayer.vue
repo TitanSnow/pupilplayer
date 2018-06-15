@@ -18,22 +18,17 @@
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
       <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
     </div>
-    <div class="flex-layout vcenter" :style="full_width">
-      <input type="text" style="flex-grow: 1" placeholder="Add danmaku" v-model="danmaku_input" @keyup.enter="add_danmaku">
-      <color-picker v-model="danmaku_color"/>
-      <button @click="add_danmaku"><icon name="rocket"/></button>
-    </div>
+    <danmaku-input :width="width" @add-danmaku="add_danmaku"/>
   </div>
 </template>
 
 <script>
 import sortedLastIndex from 'lodash.sortedlastindex'
-import {Compact} from 'vue-color'
+import DanmakuInput from './danmaku_input.vue'
 import 'vue-awesome/icons/play'
 import 'vue-awesome/icons/pause'
 import 'vue-awesome/icons/volume-off'
 import 'vue-awesome/icons/volume-up'
-import 'vue-awesome/icons/rocket'
 import Icon from 'vue-awesome/components/Icon'
 export default {
   name: 'pupilplayer',
@@ -50,9 +45,7 @@ export default {
       volume_ratio: 16,
       volume_before_mute: 0,
       danmaku_timelist: [],
-      danmaku_input: '',
       danmaku_line_height: 24,
-      danmaku_color: {hex: '#FFFFFF'}
     }
   },
   created: function(){
@@ -148,8 +141,10 @@ export default {
         this.volume = 0
       }
     },
-    add_danmaku: function(){
-      this.$emit('add-danmaku', {text: this.danmaku_input, color: this.danmaku_color.hex, time: this.current_time})
+    add_danmaku: function(dmk){
+      dmk.time = this.current_time
+      this.insert_danmaku(dmk)
+      this.$emit('add-danmaku', dmk)
     },
     insert_danmaku: function(danmaku){
       for(var row = 1; this.$refs['danmaku_row' + row]; ++row){
@@ -186,8 +181,8 @@ export default {
     }
   },
   components: {
-    'color-picker': Compact,
-    'icon': Icon
+    'icon': Icon,
+    'danmaku-input': DanmakuInput
   }
 }
 </script>
