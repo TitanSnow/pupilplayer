@@ -5,11 +5,7 @@
       <div ref="danmaku_roll">
         <div v-for="row in Math.floor(height / danmaku_line_height)"
           :key="'danmaku_row' + row" :ref="'danmaku_row' + row"
-          :style="{
-            lineHeight: danmaku_line_height + 'px',
-            fontSize: danmaku_font_size + 'px',
-            height: danmaku_line_height + 'px'
-          }" class="danmaku_row"
+          :style="danmaku_row_style" class="danmaku_row"
         >
         </div>
       </div>
@@ -17,11 +13,7 @@
     <div :style="overlay_style">
       <div v-for="row in Math.floor(height / danmaku_line_height)"
         :key="'danmaku_toprow' + row" :ref="'danmaku_toprow' + row"
-        :style="{
-          lineHeight: danmaku_line_height + 'px',
-          fontSize: danmaku_font_size + 'px',
-          height: danmaku_line_height + 'px'
-        }" class="danmaku_row top"
+        :style="danmaku_row_style" class="danmaku_row top"
       >
       </div>
     </div>
@@ -61,13 +53,21 @@ export default {
       type: Array,
       default: []
     },
-    danmaku_font_size: {
+    danmakuFontSize: {
       type: Number,
       default: 25
     },
-    danmaku_line_height_ratio: {
+    danmakuLineHeightRatio: {
       type: Number,
       default: 1.125
+    },
+    danmakuRate: {
+      type: Number,
+      default: 10
+    },
+    danmakuStroke: {
+      type: String,
+      default: 'ink'
     }
   },
   data: function(){
@@ -109,7 +109,7 @@ export default {
     var roll_callback = () => {
       this.$refs.danmaku_roll.animate({
         transform: [`translateX(${roll_next}px)`, `translateX(${roll_next - 10000}px`]
-      }, {duration: 10000 * 10}).onfinish = roll_callback
+      }, {duration: 10000 * this.danmakuRate}).onfinish = roll_callback
       roll_next -= 10000
     }
     roll_callback()
@@ -160,7 +160,21 @@ export default {
       }
     },
     danmaku_line_height(){
-      return this.danmaku_font_size * this.danmaku_line_height_ratio
+      return this.danmakuFontSize * this.danmakuLineHeightRatio
+    },
+    danmaku_row_style(){
+      if(this.danmakuStroke === 'ink')
+        var shadow = 'rgb(0, 0, 0) 1px 0px 1px, rgb(0, 0, 0) 0px 1px 1px, rgb(0, 0, 0) 0px -1px 1px, rgb(0, 0, 0) -1px 0px 1px'
+      else if(this.danmakuStroke === 'stroke')
+        var shadow = 'rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px'
+      else if(this.danmakuStroke === 'shadow')
+        var shadow = 'rgb(0, 0, 0) 1px 1px 2px, rgb(0, 0, 0) 0px 0px 1px'
+      return {
+        lineHeight: this.danmaku_line_height + 'px',
+        fontSize: this.danmakuFontSize + 'px',
+        height: this.danmaku_line_height + 'px',
+        textShadow: shadow
+      }
     }
   },
   methods: {
@@ -221,7 +235,7 @@ export default {
         element.style.position = 'absolute';
         element.style.top = 0;
         element.style.left = Math.ceil(-offset_parent(this.$refs.danmaku_roll)[0] + this.width) + 'px'
-        setTimeout(() => element.remove(), (this.width + element_width + 1) * 10)
+        setTimeout(() => element.remove(), (this.width + element_width + 1) * this.danmakuRate)
         return element
       }
     },
@@ -245,7 +259,7 @@ export default {
       if(this.$refs['danmaku_toprow' + row]){
         var element = this.create_danmaku_span(danmaku)
         row_element.appendChild(element)
-        setTimeout(() => element.remove(), this.width  * 10)
+        setTimeout(() => element.remove(), this.width * this.danmakuRate)
       }
     },
     insert_danmaku(danmaku){
@@ -284,8 +298,6 @@ canvas {
 
 .danmaku_row {
   position: relative;
-  -webkit-text-stroke: 1px black;
-  font-weight: bold;
   white-space: nowrap;
 }
 
