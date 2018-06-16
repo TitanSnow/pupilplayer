@@ -19,14 +19,17 @@
     el: '#app',
     data: {
       src: '',
-      danmakus: []
+      danmakus: [],
+      danmaku_timelist: []
     },
     methods: {
       open_file(){
         this.src = URL.createObjectURL(this.$refs.file.files[0])
       },
       add_danmaku(dmk){
-        this.danmakus.splice(_.sortedLastIndex(this.danmakus, dmk.time), 0, dmk)
+        var pos = _.sortedLastIndex(this.danmaku_timelist, dmk.time)
+        this.danmakus.splice(pos, 0, dmk)
+        this.danmaku_timelist.splice(pos, 0, dmk.time)
       }
     }
   })
