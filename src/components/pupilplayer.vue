@@ -14,6 +14,17 @@
         </div>
       </div>
     </div>
+    <div :style="overlay_style">
+      <div v-for="row in Math.floor(height / danmaku_line_height)"
+        :key="'danmaku_toprow' + row" :ref="'danmaku_toprow' + row"
+        :style="{
+          lineHeight: danmaku_line_height + 'px',
+          fontSize: danmaku_line_height + 'px',
+          height: danmaku_line_height + 'px'
+        }" class="danmaku_row top"
+      >
+      </div>
+    </div>
     <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
       <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
@@ -162,7 +173,13 @@ export default {
       dmk.time = this.current_time
       this.$emit('add-danmaku', dmk, this.insert_danmaku(dmk))
     },
-    insert_danmaku: function(danmaku){
+    create_danmaku_span(danmaku){
+      var element = document.createElement('span')
+      element.textContent = danmaku.text
+      element.style.color = danmaku.color
+      return element
+    },
+    insert_roll_danmaku(danmaku){
       for(var row = 1; this.$refs['danmaku_row' + row]; ++row){
         var row_element = this.$refs['danmaku_row' + row][0]
         var last_span = row_element.children[row_element.children.length - 1]
@@ -176,10 +193,7 @@ export default {
       }
 
       if(this.$refs['danmaku_row' + row]){
-        var row_element = this.$refs['danmaku_row' + row][0]
-        var element = document.createElement('span')
-        element.textContent = danmaku.text
-        element.style.color = danmaku.color
+        var element = this.create_danmaku_span(danmaku)
         row_element.appendChild(element)
         var element_width = parseInt(element.getBoundingClientRect().width)
         element.style.position = 'absolute';
@@ -188,6 +202,26 @@ export default {
         setTimeout(() => element.remove(), (this.width + element_width + 1) * 10)
         return element
       }
+    },
+    insert_top_danmaku(danmaku){
+      for(var row = 1; this.$refs['danmaku_toprow' + row]; ++row){
+        var row_element = this.$refs['danmaku_toprow' + row][0]
+        var last_span = row_element.children[row_element.children.length - 1]
+        if(typeof last_span === 'undefined')
+          break
+      }
+
+      if(this.$refs['danmaku_toprow' + row]){
+        var element = this.create_danmaku_span(danmaku)
+        row_element.appendChild(element)
+        setTimeout(() => element.remove(), this.width  * 10)
+      }
+    },
+    insert_danmaku(danmaku){
+      if(danmaku.type === 'roll')
+        return this.insert_roll_danmaku(danmaku)
+      else if(danmaku.type === 'top')
+        return this.insert_top_danmaku(danmaku)
     },
     update_danmakus: function(){
       this.danmaku_timelist.splice(0)
@@ -217,5 +251,9 @@ canvas {
   -webkit-text-stroke: 1px black;
   font-weight: bold;
   white-space: nowrap;
+}
+
+.danmaku_row.top{
+  text-align: center;
 }
 </style>
