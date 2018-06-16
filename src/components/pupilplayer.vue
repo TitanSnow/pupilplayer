@@ -28,6 +28,7 @@
     <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
       <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
+      <span>{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
       <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
     </div>
@@ -43,6 +44,7 @@ import 'vue-awesome/icons/pause'
 import 'vue-awesome/icons/volume-off'
 import 'vue-awesome/icons/volume-up'
 import Icon from 'vue-awesome/components/Icon'
+import LeftPad from 'left-pad'
 
 function offset_parent(e){
   return [e.getBoundingClientRect().x - e.parentNode.getBoundingClientRect().x, e.getBoundingClientRect().y - e.parentNode.getBoundingClientRect().y]
@@ -238,6 +240,9 @@ export default {
       this.danmaku_timelist.splice(0)
       for(var danmaku of this.danmakus)
         this.danmaku_timelist.push(danmaku.time)
+    },
+    time_to_string(time){
+      return `${LeftPad(Math.floor(time / 3600), 2, '0')}:${LeftPad(Math.floor(time / 60), 2, '0')}:${LeftPad(Math.floor(time % 60), 2, '0')}`
     }
   },
   components: {
