@@ -24,7 +24,7 @@
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
       <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
     </div>
-    <danmaku-input :width="width" @add-danmaku="add_danmaku"/>
+    <danmaku-input :width="width" @add-danmaku="add_danmaku" v-if="showDanmakuInput"/>
   </div>
 </template>
 
@@ -68,6 +68,10 @@ export default {
     danmakuStroke: {
       type: String,
       default: 'ink'
+    },
+    showDanmakuInput: {
+      type: Boolean,
+      default: true
     }
   },
   data: function(){
