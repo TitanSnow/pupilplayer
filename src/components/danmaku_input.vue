@@ -9,6 +9,8 @@
         <label for="roll"><icon name="space-shuttle" style="transform: rotate(180deg)"/></label>
         <input type="radio" value="top" id="top" v-model="type">
         <label for="top"><icon name="bars"/></label>
+        <input type="radio" value="bottom" id="bottom" v-model="type">
+        <label for="bottom"><icon name="window-minimize"/></label>
       </template>
     </v-popover>
     <button type="submit"><icon name="rocket"/></button>
@@ -20,6 +22,7 @@ import 'vue-awesome/icons/cog'
 import 'vue-awesome/icons/rocket'
 import 'vue-awesome/icons/space-shuttle'
 import 'vue-awesome/icons/bars'
+import 'vue-awesome/icons/window-minimize'
 import Icon from 'vue-awesome/components/Icon'
 import {VPopover} from 'v-tooltip'
 import {Compact} from 'vue-color'

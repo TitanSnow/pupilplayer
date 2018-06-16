@@ -203,13 +203,22 @@ export default {
         return element
       }
     },
-    insert_top_danmaku(danmaku){
+    insert_top_danmaku(danmaku, bottom){
       for(var row = 1; this.$refs['danmaku_toprow' + row]; ++row){
+        if(bottom)
+          continue
         var row_element = this.$refs['danmaku_toprow' + row][0]
         var last_span = row_element.children[row_element.children.length - 1]
         if(typeof last_span === 'undefined')
           break
       }
+      if(bottom)
+        for(--row; row > 0; --row){
+          var row_element = this.$refs['danmaku_toprow' + row][0]
+          var last_span = row_element.children[row_element.children.length - 1]
+          if(typeof last_span === 'undefined')
+            break
+        }
 
       if(this.$refs['danmaku_toprow' + row]){
         var element = this.create_danmaku_span(danmaku)
@@ -222,6 +231,8 @@ export default {
         return this.insert_roll_danmaku(danmaku)
       else if(danmaku.type === 'top')
         return this.insert_top_danmaku(danmaku)
+      else if(danmaku.type === 'bottom')
+        return this.insert_top_danmaku(danmaku, true)
     },
     update_danmakus: function(){
       this.danmaku_timelist.splice(0)
