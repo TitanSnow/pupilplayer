@@ -184,8 +184,8 @@ export default {
         var element_width = parseInt(element.getBoundingClientRect().width)
         element.style.position = 'absolute';
         element.style.top = 0;
-        element.style.left = -offset_parent(this.$refs.danmaku_roll)[0] + this.width + 'px'
-        setTimeout(() => element.remove(), (this.width + element_width) * 10)
+        element.style.left = Math.ceil(-offset_parent(this.$refs.danmaku_roll)[0] + this.width) + 'px'
+        setTimeout(() => element.remove(), (this.width + element_width + 1) * 10)
         return element
       }
     },
