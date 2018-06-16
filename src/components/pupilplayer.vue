@@ -7,7 +7,7 @@
           :key="'danmaku_row' + row" :ref="'danmaku_row' + row"
           :style="{
             lineHeight: danmaku_line_height + 'px',
-            fontSize: danmaku_line_height + 'px',
+            fontSize: danmaku_font_size + 'px',
             height: danmaku_line_height + 'px'
           }" class="danmaku_row"
         >
@@ -19,7 +19,7 @@
         :key="'danmaku_toprow' + row" :ref="'danmaku_toprow' + row"
         :style="{
           lineHeight: danmaku_line_height + 'px',
-          fontSize: danmaku_line_height + 'px',
+          fontSize: danmaku_font_size + 'px',
           height: danmaku_line_height + 'px'
         }" class="danmaku_row top"
       >
@@ -28,7 +28,7 @@
     <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
       <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
-      <span>{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
+      <span v-if="duration">{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
       <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
     </div>
@@ -52,7 +52,24 @@ function offset_parent(e){
 
 export default {
   name: 'pupilplayer',
-  props: ['src', 'danmakus'],
+  props: {
+    src: {
+      type: String,
+      default: ''
+    },
+    danmakus: {
+      type: Array,
+      default: []
+    },
+    danmaku_font_size: {
+      type: Number,
+      default: 25
+    },
+    danmaku_line_height_ratio: {
+      type: Number,
+      default: 1.125
+    }
+  },
   data: function(){
     return {
       element: document.createElement('video'),
@@ -64,8 +81,7 @@ export default {
       element_volume: 0,
       volume_ratio: 16,
       volume_before_mute: 0,
-      danmaku_timelist: [],
-      danmaku_line_height: 24,
+      danmaku_timelist: []
     }
   },
   created: function(){
@@ -79,6 +95,7 @@ export default {
     this.element.addEventListener('pause', () => this.paused = true)
     this.element.addEventListener('durationchange', () => this.duration = this.element.duration)
     this.element.addEventListener('volumechange', () => this.element_volume = this.element.volume)
+    this.element_volume = this.element.volume
     var frame_callback = () => {
       if(!this.paused)
         this.draw_canvas()
@@ -141,6 +158,9 @@ export default {
         pointerEvents: 'none',
         overflow: 'hidden'
       }
+    },
+    danmaku_line_height(){
+      return this.danmaku_font_size * this.danmaku_line_height_ratio
     }
   },
   methods: {
