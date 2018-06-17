@@ -36,8 +36,8 @@ export default {
     };
   },
   components: {
-    icon: Icon,
-    "v-popover": VPopover,
+    Icon,
+    VPopover,
     "color-picker": Compact
   },
   methods: {

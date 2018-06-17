@@ -19,10 +19,10 @@
     </div>
     <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
-      <input type="range" v-model.number="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
+      <range-slider v-model.number="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1"/>
       <span v-if="duration">{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
-      <input type="range" min="0" :max="volume_ratio" v-model.number="volume" style="width: 80px">
+      <range-slider min="0" :max="volume_ratio" v-model.number="volume" style="width: 80px"/>
     </div>
     <danmaku-input :width="width" @add-danmaku="add_danmaku" v-if="showDanmakuInput"/>
   </div>
@@ -36,6 +36,8 @@ import "vue-awesome/icons/pause";
 import "vue-awesome/icons/volume-off";
 import "vue-awesome/icons/volume-up";
 import Icon from "vue-awesome/components/Icon";
+import RangeSlider from "vue-range-slider";
+import "vue-range-slider/dist/vue-range-slider.css";
 import LeftPad from "left-pad";
 
 function offset_parent(e) {
@@ -324,8 +326,9 @@ export default {
     }
   },
   components: {
-    icon: Icon,
-    "danmaku-input": DanmakuInput
+    Icon,
+    DanmakuInput,
+    RangeSlider
   }
 };
 </script>
