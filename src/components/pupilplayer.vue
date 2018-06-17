@@ -19,10 +19,10 @@
     </div>
     <div class="controller" :style="full_width">
       <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
-      <input type="range" v-model="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
+      <input type="range" v-model.number="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1">
       <span v-if="duration">{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
       <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
-      <input type="range" min="0" :max="volume_ratio" v-model="volume" style="width: 80px">
+      <input type="range" min="0" :max="volume_ratio" v-model.number="volume" style="width: 80px">
     </div>
     <danmaku-input :width="width" @add-danmaku="add_danmaku" v-if="showDanmakuInput"/>
   </div>
@@ -88,7 +88,8 @@ export default {
       element_volume: 0,
       volume_ratio: 16,
       volume_before_mute: 0,
-      danmaku_timelist: []
+      danmaku_timelist: [],
+      roll_animation: null
     };
   },
   created() {
@@ -119,15 +120,17 @@ export default {
   mounted() {
     var roll_next = 0;
     var roll_callback = () => {
-      this.$refs.danmaku_roll.animate(
+      this.roll_animation = this.$refs.danmaku_roll.animate(
         {
           transform: [
             `translateX(${roll_next}px)`,
             `translateX(${roll_next - 10000}px`
           ]
         },
-        { duration: 10000 * this.danmakuRate }
-      ).onfinish = roll_callback;
+        { duration: 10000 }
+      );
+      this.roll_animation.onfinish = roll_callback;
+      this.roll_animation.playbackRate = 1 / this.danmakuRate;
       roll_next -= 10000;
     };
     roll_callback();
@@ -143,6 +146,9 @@ export default {
     },
     danmakus() {
       this.update_danmakus();
+    },
+    danmakuRate(val) {
+      this.roll_animation.playbackRate = 1 / val;
     }
   },
   computed: {
@@ -258,9 +264,17 @@ export default {
         element.style.left =
           Math.ceil(-offset_parent(this.$refs.danmaku_roll)[0] + this.width) +
           "px";
+        var rm = () => {
+          var rt =
+            offset_parent(element)[0] +
+            element.getBoundingClientRect().width +
+            offset_parent(this.$refs.danmaku_roll)[0];
+          if (rt <= 0) element.remove();
+          else setTimeout(rm, Math.ceil(rt * this.danmakuRate));
+        };
         setTimeout(
-          () => element.remove(),
-          (this.width + element_width + 1) * this.danmakuRate
+          rm,
+          Math.ceil((this.width + element_width + 1) * this.danmakuRate)
         );
         return element;
       }

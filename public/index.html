@@ -16,8 +16,10 @@
       <form @submit.prevent="open_file">
         <input type="file" ref="file" required accept="video/*">
         <button type="submit">Open</button>
+        <label>Danmaku Rate: <input type="range" v-model.number="danmaku_rate" min="5" max="30" style="direction: rtl"></label>
+        <label>Danmaku Font Size: <input type="range" v-model.number="danmaku_font_size" min="12" max="60"></label>
       </form>
-      <pupilplayer :src="src" :danmakus="danmakus" @add-danmaku="add_danmaku"/>
+      <pupilplayer :src="src" :danmakus="danmakus" :danmaku-rate="danmaku_rate" :danmaku-font-size="danmaku_font_size" @add-danmaku="add_danmaku"/>
     </div>
     <script>
       window.onload = function(){
@@ -26,7 +28,9 @@
           data: {
             src: '',
             danmakus: [],
-            danmaku_timelist: []
+            danmaku_timelist: [],
+            danmaku_font_size: 25,
+            danmaku_rate: 10
           },
           methods: {
             open_file(){
