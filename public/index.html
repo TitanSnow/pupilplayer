@@ -18,8 +18,15 @@
         <button type="submit">Open</button>
         <label>Danmaku Rate: <input type="range" v-model.number="danmaku_rate" min="5" max="30" style="direction: rtl"></label>
         <label>Danmaku Font Size: <input type="range" v-model.number="danmaku_font_size" min="12" max="60"></label>
+        <label>Stroke:
+          <select v-model="danmaku_stroke">
+            <option>ink</option>
+            <option>stroke</option>
+            <option>shadow</option>
+          </select>
+        </label>
       </form>
-      <pupilplayer :src="src" :danmakus="danmakus" :danmaku-rate="danmaku_rate" :danmaku-font-size="danmaku_font_size" @add-danmaku="add_danmaku"/>
+      <pupilplayer :src="src" :danmakus="danmakus" :danmaku-rate="danmaku_rate" :danmaku-font-size="danmaku_font_size" :danmaku-stroke="danmaku_stroke" @add-danmaku="add_danmaku"/>
     </div>
     <script>
       window.onload = function(){
@@ -30,7 +37,8 @@
             danmakus: [],
             danmaku_timelist: [],
             danmaku_font_size: 25,
-            danmaku_rate: 10
+            danmaku_rate: 10,
+            danmaku_stroke: 'ink'
           },
           methods: {
             open_file(){
