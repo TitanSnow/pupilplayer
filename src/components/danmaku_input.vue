@@ -1,50 +1,42 @@
 <template>
   <form @submit.prevent="submit" :style="{width: width + 'px'}">
-    <input type="text" placeholder="Add danmaku" v-model="text">
-    <v-popover>
-      <button type="button"><icon name="cog"/></button>
-      <template slot="popover">
-        <color-picker v-model="color"/>
-        <input type="radio" value="roll" id="roll" v-model="type">
-        <label for="roll"><icon name="space-shuttle" style="transform: rotate(180deg)"/></label>
-        <input type="radio" value="top" id="top" v-model="type">
-        <label for="top"><icon name="bars"/></label>
-        <input type="radio" value="bottom" id="bottom" v-model="type">
-        <label for="bottom"><icon name="window-minimize"/></label>
-      </template>
-    </v-popover>
-    <button type="submit"><icon name="rocket"/></button>
+    <ui-textbox placeholder="Add danmaku" v-model="text" style="margin-bottom: 0; flex-grow: 1; margin-left: 6px" icon="comment"/>
+    <color-picker v-model="color"
+      :show-border="true" popover-to="left"
+      :trigger-style="{border: '2px solid #dbdbdb', width: '36px', height: '36px', boxSizing: 'border-box', display: 'block'}"
+      swatch-size="20" shapes="circles" colors="text-basic"/>
+    <ui-icon-button icon="clear_all" v-if="type === 'roll'" style="transform: scaleX(-1)" @click="type = 'top'" type="secondary"/>
+    <ui-icon-button icon="filter_list" v-if="type === 'top'" @click="type = 'bottom'" type="secondary"/>
+    <ui-icon-button icon="filter_list" v-if="type === 'bottom'" style="transform: scaleY(-1)" @click="type = 'roll'" type="secondary"/>
+    <ui-icon-button icon='send' buttonType="submit"/>
   </form>
 </template>
 
 <script>
-import "vue-awesome/icons/cog";
-import "vue-awesome/icons/rocket";
-import "vue-awesome/icons/space-shuttle";
-import "vue-awesome/icons/bars";
-import "vue-awesome/icons/window-minimize";
-import Icon from "vue-awesome/components/Icon";
-import { VPopover } from "v-tooltip";
-import { Compact } from "vue-color";
+import "keen-ui/dist/keen-ui.css";
+import { UiTextbox, UiIconButton } from "keen-ui";
+import "vue-swatches/dist/vue-swatches.min.css";
+import ColorPicker from "vue-swatches";
+
 export default {
   props: ["width"],
   data() {
     return {
       text: "",
-      color: { hex: "#ffffff" },
+      color: "#ffffff",
       type: "roll"
     };
   },
   components: {
-    Icon,
-    VPopover,
-    "color-picker": Compact
+    ColorPicker,
+    UiTextbox,
+    UiIconButton
   },
   methods: {
     submit() {
       this.$emit("add-danmaku", {
         text: this.text,
-        color: this.color.hex,
+        color: this.color,
         type: this.type
       });
       this.text = "";
@@ -58,6 +50,10 @@ export default {
 form {
   display: flex;
   align-items: center;
+  border: 1px solid #e2e2e2;
+  border-top: none;
+  box-sizing: border-box;
+  padding: 3px;
 }
 form > input {
   flex-grow: 1;

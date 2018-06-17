@@ -18,10 +18,10 @@
       </div>
     </div>
     <div class="controller" :style="full_width">
-      <button @click="toggle_play"><icon :name="paused ? 'play' : 'pause'"/></button>
+      <ui-icon-button @click="toggle_play" :icon="paused ? 'play_arrow' : 'pause'"/>
       <range-slider v-model.number="current_time" min="0" :max="duration" v-if="duration" style="flex-grow: 1"/>
-      <span v-if="duration">{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
-      <button @click="toggle_mute"><icon :name="volume == 0 ? 'volume-off' : 'volume-up'"/></button>
+      <span v-if="duration" class="time_span">{{ time_to_string(current_time) }} / {{ time_to_string(duration) }}</span>
+      <ui-icon-button @click="toggle_mute" :icon="volume == 0 ? 'volume_off' : 'volume_up'" type="secondary"/>
       <range-slider min="0" :max="volume_ratio" v-model.number="volume" style="width: 80px"/>
     </div>
     <danmaku-input :width="width" @add-danmaku="add_danmaku" v-if="showDanmakuInput"/>
@@ -31,13 +31,10 @@
 <script>
 import sortedLastIndex from "lodash.sortedlastindex";
 import DanmakuInput from "./danmaku_input.vue";
-import "vue-awesome/icons/play";
-import "vue-awesome/icons/pause";
-import "vue-awesome/icons/volume-off";
-import "vue-awesome/icons/volume-up";
-import Icon from "vue-awesome/components/Icon";
-import RangeSlider from "vue-range-slider";
 import "vue-range-slider/dist/vue-range-slider.css";
+import RangeSlider from "vue-range-slider";
+import "keen-ui/dist/keen-ui.css";
+import { UiIconButton } from "keen-ui";
 import LeftPad from "left-pad";
 
 function offset_parent(e) {
@@ -326,9 +323,9 @@ export default {
     }
   },
   components: {
-    Icon,
     DanmakuInput,
-    RangeSlider
+    RangeSlider,
+    UiIconButton
   }
 };
 </script>
@@ -341,6 +338,9 @@ canvas {
 .controller {
   display: flex;
   align-items: center;
+  padding: 3px;
+  border: 1px solid #e2e2e2;
+  box-sizing: border-box;
 }
 
 .danmaku_row {
@@ -351,4 +351,14 @@ canvas {
 .danmaku_row.top {
   text-align: center;
 }
+
+.time_span {
+  font-family: monospace;
+  font-size: 0.7em;
+  margin-right: 5px;
+}
+</style>
+
+<style>
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
 </style>
