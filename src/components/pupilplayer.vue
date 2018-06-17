@@ -72,6 +72,10 @@ export default {
       type: String,
       default: "ink"
     },
+    danmakuFontFamily: {
+      type: String,
+      default: "sans-serif"
+    },
     showDanmakuInput: {
       type: Boolean,
       default: true
@@ -198,7 +202,8 @@ export default {
         lineHeight: this.danmaku_line_height + "px",
         fontSize: this.danmakuFontSize + "px",
         height: this.danmaku_line_height + "px",
-        textShadow: shadow
+        textShadow: shadow,
+        fontFamily: this.danmakuFontFamily
       };
     }
   },

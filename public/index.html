@@ -25,8 +25,16 @@
             <option>shadow</option>
           </select>
         </label>
+        <label>Font: <input type="text" v-model="danmaku_font"></label>
       </form>
-      <pupilplayer :src="src" :danmakus="danmakus" :danmaku-rate="danmaku_rate" :danmaku-font-size="danmaku_font_size" :danmaku-stroke="danmaku_stroke" @add-danmaku="add_danmaku"/>
+      <pupilplayer
+        :src="src"
+        :danmakus="danmakus"
+        :danmaku-rate="danmaku_rate"
+        :danmaku-font-size="danmaku_font_size"
+        :danmaku-stroke="danmaku_stroke"
+        :danmaku-font-family="danmaku_font"
+        @add-danmaku="add_danmaku"/>
     </div>
     <script>
       window.onload = function(){
@@ -38,7 +46,8 @@
             danmaku_timelist: [],
             danmaku_font_size: 25,
             danmaku_rate: 10,
-            danmaku_stroke: 'ink'
+            danmaku_stroke: 'ink',
+            danmaku_font: 'sans-serif'
           },
           methods: {
             open_file(){
