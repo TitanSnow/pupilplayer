@@ -1,2 +1,2 @@
-import pupilplayer from './components/pupilplayer.vue'
-window.Vue.component('pupilplayer', pupilplayer)
+import pupilplayer from "./components/pupilplayer.vue";
+window.Vue.component("pupilplayer", pupilplayer);

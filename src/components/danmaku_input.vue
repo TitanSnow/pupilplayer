@@ -18,35 +18,39 @@
 </template>
 
 <script>
-import 'vue-awesome/icons/cog'
-import 'vue-awesome/icons/rocket'
-import 'vue-awesome/icons/space-shuttle'
-import 'vue-awesome/icons/bars'
-import 'vue-awesome/icons/window-minimize'
-import Icon from 'vue-awesome/components/Icon'
-import {VPopover} from 'v-tooltip'
-import {Compact} from 'vue-color'
+import "vue-awesome/icons/cog";
+import "vue-awesome/icons/rocket";
+import "vue-awesome/icons/space-shuttle";
+import "vue-awesome/icons/bars";
+import "vue-awesome/icons/window-minimize";
+import Icon from "vue-awesome/components/Icon";
+import { VPopover } from "v-tooltip";
+import { Compact } from "vue-color";
 export default {
-  props: ['width'],
-  data(){
+  props: ["width"],
+  data() {
     return {
-      text: '',
-      color: {hex: '#ffffff'},
-      type: 'roll'
-    }
+      text: "",
+      color: { hex: "#ffffff" },
+      type: "roll"
+    };
   },
   components: {
-    'icon': Icon,
-    'v-popover': VPopover,
-    'color-picker': Compact
+    icon: Icon,
+    "v-popover": VPopover,
+    "color-picker": Compact
   },
   methods: {
-    submit(){
-      this.$emit('add-danmaku', {text: this.text, color: this.color.hex, type: this.type})
-      this.text = ''
+    submit() {
+      this.$emit("add-danmaku", {
+        text: this.text,
+        color: this.color.hex,
+        type: this.type
+      });
+      this.text = "";
     }
   }
-}
+};
 </script>
 
 
@@ -58,13 +62,13 @@ form {
 form > input {
   flex-grow: 1;
 }
-input[type='radio'] {
+input[type="radio"] {
   display: none;
 }
-input[type='radio'] + label {
+input[type="radio"] + label {
   cursor: pointer;
 }
-input[type='radio']:checked + label {
+input[type="radio"]:checked + label {
   color: #00bcd4;
 }
 </style>

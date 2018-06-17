@@ -29,29 +29,32 @@
 </template>
 
 <script>
-import sortedLastIndex from 'lodash.sortedlastindex'
-import DanmakuInput from './danmaku_input.vue'
-import 'vue-awesome/icons/play'
-import 'vue-awesome/icons/pause'
-import 'vue-awesome/icons/volume-off'
-import 'vue-awesome/icons/volume-up'
-import Icon from 'vue-awesome/components/Icon'
-import LeftPad from 'left-pad'
+import sortedLastIndex from "lodash.sortedlastindex";
+import DanmakuInput from "./danmaku_input.vue";
+import "vue-awesome/icons/play";
+import "vue-awesome/icons/pause";
+import "vue-awesome/icons/volume-off";
+import "vue-awesome/icons/volume-up";
+import Icon from "vue-awesome/components/Icon";
+import LeftPad from "left-pad";
 
-function offset_parent(e){
-  return [e.getBoundingClientRect().x - e.parentNode.getBoundingClientRect().x, e.getBoundingClientRect().y - e.parentNode.getBoundingClientRect().y]
+function offset_parent(e) {
+  return [
+    e.getBoundingClientRect().x - e.parentNode.getBoundingClientRect().x,
+    e.getBoundingClientRect().y - e.parentNode.getBoundingClientRect().y
+  ];
 }
 
 export default {
-  name: 'pupilplayer',
+  name: "pupilplayer",
   props: {
     src: {
       type: String,
-      default: ''
+      default: ""
     },
     danmakus: {
       type: Array,
-      default: []
+      default: () => []
     },
     danmakuFontSize: {
       type: Number,
@@ -67,16 +70,16 @@ export default {
     },
     danmakuStroke: {
       type: String,
-      default: 'ink'
+      default: "ink"
     },
     showDanmakuInput: {
       type: Boolean,
       default: true
     }
   },
-  data: function(){
+  data() {
     return {
-      element: document.createElement('video'),
+      element: document.createElement("video"),
       width: 0,
       height: 0,
       paused: true,
@@ -86,208 +89,226 @@ export default {
       volume_ratio: 16,
       volume_before_mute: 0,
       danmaku_timelist: []
-    }
+    };
   },
-  created: function(){
-    this.update_src()
-    this.update_danmakus()
-    this.element.addEventListener('loadedmetadata', () => {
-      this.width = this.element.videoWidth
-      this.height = this.element.videoHeight
-    })
-    this.element.addEventListener('play', () => this.paused = false)
-    this.element.addEventListener('pause', () => this.paused = true)
-    this.element.addEventListener('durationchange', () => this.duration = this.element.duration)
-    this.element.addEventListener('volumechange', () => this.element_volume = this.element.volume)
-    this.element_volume = this.element.volume
+  created() {
+    this.update_src();
+    this.update_danmakus();
+    this.element.addEventListener("loadedmetadata", () => {
+      this.width = this.element.videoWidth;
+      this.height = this.element.videoHeight;
+    });
+    this.element.addEventListener("play", () => (this.paused = false));
+    this.element.addEventListener("pause", () => (this.paused = true));
+    this.element.addEventListener(
+      "durationchange",
+      () => (this.duration = this.element.duration)
+    );
+    this.element.addEventListener(
+      "volumechange",
+      () => (this.element_volume = this.element.volume)
+    );
+    this.element_volume = this.element.volume;
     var frame_callback = () => {
-      if(!this.paused)
-        this.draw_canvas()
-      this.element_current_time = this.element.currentTime
-      requestAnimationFrame(frame_callback)
-    }
-    requestAnimationFrame(frame_callback)
+      if (!this.paused) this.draw_canvas();
+      this.element_current_time = this.element.currentTime;
+      requestAnimationFrame(frame_callback);
+    };
+    requestAnimationFrame(frame_callback);
   },
-  mounted(){
-    var roll_next = 0
+  mounted() {
+    var roll_next = 0;
     var roll_callback = () => {
-      this.$refs.danmaku_roll.animate({
-        transform: [`translateX(${roll_next}px)`, `translateX(${roll_next - 10000}px`]
-      }, {duration: 10000 * this.danmakuRate}).onfinish = roll_callback
-      roll_next -= 10000
-    }
-    roll_callback()
+      this.$refs.danmaku_roll.animate(
+        {
+          transform: [
+            `translateX(${roll_next}px)`,
+            `translateX(${roll_next - 10000}px`
+          ]
+        },
+        { duration: 10000 * this.danmakuRate }
+      ).onfinish = roll_callback;
+      roll_next -= 10000;
+    };
+    roll_callback();
   },
   watch: {
-    src: function(){
-      this.update_src()
+    src() {
+      this.update_src();
     },
-    current_time: function(val, old_val){
-      var l = sortedLastIndex(this.danmaku_timelist, old_val)
-      var r = sortedLastIndex(this.danmaku_timelist, val)
-      for(var i = l; i < r; ++i)
-        this.insert_danmaku(this.danmakus[i])
+    current_time(val, old_val) {
+      var l = sortedLastIndex(this.danmaku_timelist, old_val);
+      var r = sortedLastIndex(this.danmaku_timelist, val);
+      for (var i = l; i < r; ++i) this.insert_danmaku(this.danmakus[i]);
     },
-    danmakus: function(){
-      this.update_danmakus()
+    danmakus() {
+      this.update_danmakus();
     }
   },
   computed: {
     current_time: {
-      get: function(){
-        return this.element_current_time
+      get() {
+        return this.element_current_time;
       },
-      set: function(val){
-        this.element.currentTime = val
+      set(val) {
+        this.element.currentTime = val;
       }
     },
     volume: {
-      get: function(){
-        return this.element_volume * this.volume_ratio
+      get() {
+        return this.element_volume * this.volume_ratio;
       },
-      set: function(val){
-        this.element.volume = val / this.volume_ratio
+      set(val) {
+        this.element.volume = val / this.volume_ratio;
       }
     },
-    full_width: function(){
+    full_width() {
       return {
-        width: this.width + 'px'
-      }
+        width: this.width + "px"
+      };
     },
-    overlay_style: function(){
+    overlay_style() {
       return {
         ...this.full_width,
-        marginTop: -this.height + 'px',
-        height: this.height + 'px',
-        pointerEvents: 'none',
-        overflow: 'hidden'
-      }
+        marginTop: -this.height + "px",
+        height: this.height + "px",
+        pointerEvents: "none",
+        overflow: "hidden"
+      };
     },
-    danmaku_line_height(){
-      return this.danmakuFontSize * this.danmakuLineHeightRatio
+    danmaku_line_height() {
+      return this.danmakuFontSize * this.danmakuLineHeightRatio;
     },
-    danmaku_row_style(){
-      if(this.danmakuStroke === 'ink')
-        var shadow = 'rgb(0, 0, 0) 1px 0px 1px, rgb(0, 0, 0) 0px 1px 1px, rgb(0, 0, 0) 0px -1px 1px, rgb(0, 0, 0) -1px 0px 1px'
-      else if(this.danmakuStroke === 'stroke')
-        var shadow = 'rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px'
-      else if(this.danmakuStroke === 'shadow')
-        var shadow = 'rgb(0, 0, 0) 1px 1px 2px, rgb(0, 0, 0) 0px 0px 1px'
+    danmaku_row_style() {
+      if (this.danmakuStroke === "ink")
+        var shadow =
+          "rgb(0, 0, 0) 1px 0px 1px, rgb(0, 0, 0) 0px 1px 1px, rgb(0, 0, 0) 0px -1px 1px, rgb(0, 0, 0) -1px 0px 1px";
+      else if (this.danmakuStroke === "stroke")
+        shadow =
+          "rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px, rgb(0, 0, 0) 0px 0px 1px";
+      else if (this.danmakuStroke === "shadow")
+        shadow = "rgb(0, 0, 0) 1px 1px 2px, rgb(0, 0, 0) 0px 0px 1px";
       return {
-        lineHeight: this.danmaku_line_height + 'px',
-        fontSize: this.danmakuFontSize + 'px',
-        height: this.danmaku_line_height + 'px',
+        lineHeight: this.danmaku_line_height + "px",
+        fontSize: this.danmakuFontSize + "px",
+        height: this.danmaku_line_height + "px",
         textShadow: shadow
-      }
+      };
     }
   },
   methods: {
-    update_src: function(){
-      this.element.src = this.src
+    update_src() {
+      this.element.src = this.src;
     },
-    toggle_play: function(){
-      if(this.paused)
-        this.play()
-      else
-        this.pause()
+    toggle_play() {
+      if (this.paused) this.play();
+      else this.pause();
     },
-    play: function(){
-      this.element.play()
+    play() {
+      this.element.play();
     },
-    pause: function(){
-      this.element.pause()
+    pause() {
+      this.element.pause();
     },
-    draw_canvas: function(){
-      var ctx = this.$refs.canvas.getContext('2d')
-      ctx.drawImage(this.element, 0, 0)
+    draw_canvas() {
+      var ctx = this.$refs.canvas.getContext("2d");
+      ctx.drawImage(this.element, 0, 0);
     },
-    toggle_mute: function(){
-      if(this.volume == 0)
-        this.volume = this.volume_before_mute == 0 ? this.volume_ratio : this.volume_before_mute
-      else{
-        this.volume_before_mute = this.volume
-        this.volume = 0
+    toggle_mute() {
+      if (this.volume == 0)
+        this.volume =
+          this.volume_before_mute == 0
+            ? this.volume_ratio
+            : this.volume_before_mute;
+      else {
+        this.volume_before_mute = this.volume;
+        this.volume = 0;
       }
     },
-    add_danmaku: function(dmk){
-      dmk.time = this.current_time
-      this.$emit('add-danmaku', dmk, this.insert_danmaku(dmk))
+    add_danmaku(dmk) {
+      dmk.time = this.current_time;
+      this.$emit("add-danmaku", dmk, this.insert_danmaku(dmk));
     },
-    create_danmaku_span(danmaku){
-      var element = document.createElement('span')
-      element.textContent = danmaku.text
-      element.style.color = danmaku.color
-      return element
+    create_danmaku_span(danmaku) {
+      var element = document.createElement("span");
+      element.textContent = danmaku.text;
+      element.style.color = danmaku.color;
+      return element;
     },
-    insert_roll_danmaku(danmaku){
-      for(var row = 1; this.$refs['danmaku_row' + row]; ++row){
-        var row_element = this.$refs['danmaku_row' + row][0]
-        var last_span = row_element.children[row_element.children.length - 1]
-        if(typeof last_span === 'undefined')
-          break
-        else{
-          var rt = offset_parent(last_span)[0] + last_span.getBoundingClientRect().width + offset_parent(this.$refs.danmaku_roll)[0]
-          if(rt < this.width)
-            break
+    insert_roll_danmaku(danmaku) {
+      for (var row = 1; this.$refs["danmaku_row" + row]; ++row) {
+        var row_element = this.$refs["danmaku_row" + row][0];
+        var last_span = row_element.children[row_element.children.length - 1];
+        if (typeof last_span === "undefined") break;
+        else {
+          var rt =
+            offset_parent(last_span)[0] +
+            last_span.getBoundingClientRect().width +
+            offset_parent(this.$refs.danmaku_roll)[0];
+          if (rt < this.width) break;
         }
       }
 
-      if(this.$refs['danmaku_row' + row]){
-        var element = this.create_danmaku_span(danmaku)
-        row_element.appendChild(element)
-        var element_width = parseInt(element.getBoundingClientRect().width)
-        element.style.position = 'absolute';
+      if (this.$refs["danmaku_row" + row]) {
+        var element = this.create_danmaku_span(danmaku);
+        row_element.appendChild(element);
+        var element_width = parseInt(element.getBoundingClientRect().width);
+        element.style.position = "absolute";
         element.style.top = 0;
-        element.style.left = Math.ceil(-offset_parent(this.$refs.danmaku_roll)[0] + this.width) + 'px'
-        setTimeout(() => element.remove(), (this.width + element_width + 1) * this.danmakuRate)
-        return element
+        element.style.left =
+          Math.ceil(-offset_parent(this.$refs.danmaku_roll)[0] + this.width) +
+          "px";
+        setTimeout(
+          () => element.remove(),
+          (this.width + element_width + 1) * this.danmakuRate
+        );
+        return element;
       }
     },
-    insert_top_danmaku(danmaku, bottom){
-      for(var row = 1; this.$refs['danmaku_toprow' + row]; ++row){
-        if(bottom)
-          continue
-        var row_element = this.$refs['danmaku_toprow' + row][0]
-        var last_span = row_element.children[row_element.children.length - 1]
-        if(typeof last_span === 'undefined')
-          break
+    insert_top_danmaku(danmaku, bottom) {
+      for (var row = 1; this.$refs["danmaku_toprow" + row]; ++row) {
+        if (bottom) continue;
+        var row_element = this.$refs["danmaku_toprow" + row][0];
+        var last_span = row_element.children[row_element.children.length - 1];
+        if (typeof last_span === "undefined") break;
       }
-      if(bottom)
-        for(--row; row > 0; --row){
-          var row_element = this.$refs['danmaku_toprow' + row][0]
-          var last_span = row_element.children[row_element.children.length - 1]
-          if(typeof last_span === 'undefined')
-            break
+      if (bottom)
+        for (--row; row > 0; --row) {
+          row_element = this.$refs["danmaku_toprow" + row][0];
+          last_span = row_element.children[row_element.children.length - 1];
+          if (typeof last_span === "undefined") break;
         }
 
-      if(this.$refs['danmaku_toprow' + row]){
-        var element = this.create_danmaku_span(danmaku)
-        row_element.appendChild(element)
-        setTimeout(() => element.remove(), this.width * this.danmakuRate)
+      if (this.$refs["danmaku_toprow" + row]) {
+        var element = this.create_danmaku_span(danmaku);
+        row_element.appendChild(element);
+        setTimeout(() => element.remove(), this.width * this.danmakuRate);
       }
     },
-    insert_danmaku(danmaku){
-      if(danmaku.type === 'roll')
-        return this.insert_roll_danmaku(danmaku)
-      else if(danmaku.type === 'top')
-        return this.insert_top_danmaku(danmaku)
-      else if(danmaku.type === 'bottom')
-        return this.insert_top_danmaku(danmaku, true)
+    insert_danmaku(danmaku) {
+      if (danmaku.type === "roll") return this.insert_roll_danmaku(danmaku);
+      else if (danmaku.type === "top") return this.insert_top_danmaku(danmaku);
+      else if (danmaku.type === "bottom")
+        return this.insert_top_danmaku(danmaku, true);
     },
-    update_danmakus: function(){
-      this.danmaku_timelist.splice(0)
-      for(var danmaku of this.danmakus)
-        this.danmaku_timelist.push(danmaku.time)
+    update_danmakus() {
+      this.danmaku_timelist.splice(0);
+      for (var danmaku of this.danmakus)
+        this.danmaku_timelist.push(danmaku.time);
     },
-    time_to_string(time){
-      return `${LeftPad(Math.floor(time / 3600), 2, '0')}:${LeftPad(Math.floor(time / 60), 2, '0')}:${LeftPad(Math.floor(time % 60), 2, '0')}`
+    time_to_string(time) {
+      return `${LeftPad(Math.floor(time / 3600), 2, "0")}:${LeftPad(
+        Math.floor(time / 60),
+        2,
+        "0"
+      )}:${LeftPad(Math.floor(time % 60), 2, "0")}`;
     }
   },
   components: {
-    'icon': Icon,
-    'danmaku-input': DanmakuInput
+    icon: Icon,
+    "danmaku-input": DanmakuInput
   }
-}
+};
 </script>
 
 <style scoped>
@@ -305,7 +326,7 @@ canvas {
   white-space: nowrap;
 }
 
-.danmaku_row.top{
+.danmaku_row.top {
   text-align: center;
 }
 </style>
